@@ -6,7 +6,8 @@ sequenceDiagram
     Cliente->>UI: Revisar sacola e preencher endereco
     UI->>API: GET produtos atuais
     API->>DB: SELECT produtos ativos
-    DB-->>UI: Precos e estoque via API
+    DB-->>API: Precos e estoque
+    API-->>UI: JSON dos produtos atuais
     Cliente->>UI: Confirmar pagamento simulado
     UI->>API: POST /api/orders com chave UUID
     API->>API: Validar origem sessao e schema
