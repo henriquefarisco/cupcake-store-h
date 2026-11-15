@@ -1,0 +1,9 @@
+flowchart TB
+    Main[main.tsx paginas e Store] --> Router[React Router]
+    Main --> Transport[api.ts transporte JSON]
+    Main --> Domain[domain.ts schemas e regras]
+    Transport --> Server[index.ts controladores HTTP]
+    Server --> Domain
+    Server --> Security[security.ts senha e hash]
+    Server --> Schema[migrations SQL e triggers]
+    Schema --> DB[(D1)]

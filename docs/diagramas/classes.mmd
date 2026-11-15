@@ -1,0 +1,43 @@
+classDiagram
+    class User {
+      string id
+      string name
+      string email
+      string role
+    }
+    class Product {
+      number id
+      string name
+      number category_id
+      number price_cents
+      number stock
+      number active
+      string image
+    }
+    class CartItem {
+      number quantity
+    }
+    class Order {
+      string id
+      Status status
+      number total_cents
+      string created_at
+      string payment
+    }
+    class Domain {
+      cartTotal(items) number
+      canTransition(from,to) boolean
+      money(cents) string
+    }
+    class Security {
+      passwordHash(password,salt) Promise
+      verifyPassword(password,stored) Promise
+      digest(value) Promise
+    }
+    Product <|-- CartItem : tipo estendido
+    User "1" --> "0..*" Order : titular persistido
+    Order --> Product : itens historicos no banco
+    Domain ..> CartItem : calcula
+    Security ..> User : protege senha
+    note for Domain "Funcoes de modulo, nao classe instanciada"
+    note for Security "Funcoes de modulo, nao classe instanciada"

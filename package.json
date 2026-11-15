@@ -1,0 +1,51 @@
+{
+  "name": "cupcake-store-h",
+  "version": "1.0.0",
+  "description": "Loja acadêmica de cupcakes em React, Workers e D1",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "dev:api": "wrangler dev --ip 127.0.0.1",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "format": "prettier --write src tests scripts *.json *.ts *.html .github docs README.md",
+    "format:check": "prettier --check src tests scripts *.json *.ts *.html .github docs README.md",
+    "test": "vitest run tests/unit",
+    "test:integration": "node scripts/integration.mjs",
+    "test:e2e": "playwright test",
+    "db:local": "wrangler d1 migrations apply DB --local",
+    "db:remote": "wrangler d1 migrations apply DB --remote",
+    "deploy": "wrangler deploy",
+    "check:private": "node scripts/check-private.mjs",
+    "smoke": "node scripts/smoke.mjs"
+  },
+  "keywords": [],
+  "type": "module",
+  "dependencies": {
+    "hono": "^4.13.18",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-router-dom": "^7.18.5",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261115.1",
+    "@mermaid-js/mermaid-cli": "^12.2.0",
+    "@playwright/test": "^1.65.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.3.0",
+    "eslint": "^10.15.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "prettier": "^3.10.1",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.2",
+    "vite": "^8.3.8",
+    "vitest": "^5.1.0",
+    "wrangler": "^4.162.0"
+  },
+  "private": true,
+  "overrides": {
+    "minimatch": "^11.0.8"
+  }
+}

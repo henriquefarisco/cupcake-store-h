@@ -1,0 +1,15 @@
+flowchart TD
+    Inicio([Inicio]) --> Catalogo[Consultar catalogo]
+    Catalogo --> Sacola[Adicionar e alterar itens]
+    Sacola --> Login{Autenticado?}
+    Login -->|Nao| Conta[Cadastrar ou entrar]
+    Conta --> Revisao
+    Login -->|Sim| Revisao[Revisar precos e endereco]
+    Revisao --> Pagamento[Escolher pagamento simulado]
+    Pagamento --> Validar[Validar sessao entrada e disponibilidade]
+    Validar --> Estoque{Itens disponiveis?}
+    Estoque -->|Nao| Ajuste[Mostrar erro e ajustar sacola]
+    Ajuste --> Sacola
+    Estoque -->|Sim| Persistir[Registrar pedido e reservar estoque atomicamente]
+    Persistir --> Confirmar[Exibir ID resumo e historico]
+    Confirmar --> Fim([Acompanhar pedido])

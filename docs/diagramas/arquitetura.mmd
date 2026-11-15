@@ -1,0 +1,6 @@
+flowchart LR
+    Cliente[Navegador React] -->|HTTPS mesma origem| Assets[Workers Static Assets]
+    Cliente -->|JSON e cookie HttpOnly| API[Worker Hono /api]
+    API --> Val[Zod e dominio]
+    API --> Crypto[Web Crypto]
+    API -->|SQL parametrizado e batch| D1[(Cloudflare D1)]

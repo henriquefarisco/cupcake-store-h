@@ -1,0 +1,9 @@
+flowchart LR
+    Evento[PR push main ou manual] --> Quality[Quality formatacao lint tipos auditoria privacidade]
+    Quality --> Tests[Tests unitarios integracao E2E]
+    Quality --> Build[Build Vite e verificacao de assets]
+    Tests --> Gate{main push ou manual e credencial?}
+    Build --> Gate
+    Gate -->|Sim| Deploy[Migrations D1 e Wrangler deploy]
+    Gate -->|Nao| SemDeploy[Sem publicacao]
+    Deploy --> Smoke[Smoke somente leitura em producao]

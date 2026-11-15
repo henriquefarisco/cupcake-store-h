@@ -1,0 +1,28 @@
+sequenceDiagram
+    actor Cliente
+    participant UI as React Checkout
+    participant API as Worker Hono
+    participant DB as D1
+    Cliente->>UI: Revisar sacola e preencher endereco
+    UI->>API: GET produtos atuais
+    API->>DB: SELECT produtos ativos
+    DB-->>UI: Precos e estoque via API
+    Cliente->>UI: Confirmar pagamento simulado
+    UI->>API: POST /api/orders com chave UUID
+    API->>API: Validar origem sessao e schema
+    API->>DB: Consultar chave e hash
+    alt Pedido ja registrado com mesmo conteudo
+       DB-->>API: ID existente
+       API-->>UI: 200 ID existente
+    else Novo pedido
+       API->>DB: batch endereco pedido itens historico
+       DB->>DB: Triggers validam reservam estoque e somam total
+       alt Todos os itens disponiveis
+          DB-->>API: Commit atomico
+          API-->>UI: 201 ID
+       else Produto sem saldo ou inativo
+          DB-->>API: Rollback do lote
+          API-->>UI: 409 conflito
+       end
+    end
+    UI-->>Cliente: Confirmacao ou erro recuperavel

@@ -1,0 +1,12 @@
+stateDiagram-v2
+    [*] --> recebido
+    recebido --> preparacao
+    recebido --> cancelado
+    preparacao --> entrega
+    preparacao --> cancelado
+    entrega --> entregue
+    entregue --> [*]
+    cancelado --> [*]
+    note right of cancelado
+      Devolve estoque uma unica vez
+    end note

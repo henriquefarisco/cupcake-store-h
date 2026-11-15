@@ -1,0 +1,7 @@
+node_modules
+dist
+.local
+entrega
+package-lock.json
+docs/diagramas/*.svg
+docs/evidencias/*.svg

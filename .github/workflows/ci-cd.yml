@@ -1,0 +1,126 @@
+name: CI/CD - Cupcake Store H
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cupcake-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  quality:
+    name: Quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm audit --audit-level=moderate
+      - run: npm run check:private
+  tests:
+    name: Tests
+    needs: quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm test -- --reporter=default --reporter=junit --outputFile=test-results/unit.xml
+      - run: npm run build
+      - run: npm run db:local
+      - run: npx playwright install --with-deps chromium
+      - name: Integration and E2E on workerd and D1
+        env:
+          BASE_URL: http://127.0.0.1:8793
+        run: |
+          npx wrangler dev --ip 127.0.0.1 --port 8793 > /tmp/cupcake-worker.log 2>&1 &
+          WORKER_PID=$!
+          trap 'kill "$WORKER_PID" 2>/dev/null || true' EXIT
+          for i in $(seq 1 60); do
+            curl -fsS http://127.0.0.1:8793/api/health && break || sleep 1
+          done
+          npm run test:integration
+          npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-reports
+          path: |
+            test-results/
+            playwright-report/
+            docs/evidencias/
+          retention-days: 14
+  build:
+    name: Build
+    needs: quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm run check:private
+      - uses: actions/upload-artifact@v4
+        with:
+          name: production-assets
+          path: dist/
+          retention-days: 7
+  deploy:
+    name: Deploy
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: [tests, build]
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: production-assets
+          path: dist
+      - name: Check credential availability and expiry
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          AUTH_EXPIRES_AT: ${{ vars.CLOUDFLARE_AUTH_EXPIRES_AT }}
+        run: node -e 'if(!process.env.CLOUDFLARE_API_TOKEN)throw Error("Cloudflare secret ausente");if(process.env.AUTH_EXPIRES_AT && Date.parse(process.env.AUTH_EXPIRES_AT)<Date.now()+300000)throw Error("OAuth temporario expirou. Execute node scripts/sync-deploy-auth.mjs no ambiente local ou configure API token dedicado.");'
+      - uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: d1 migrations apply DB --remote
+      - uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+  smoke:
+    name: Smoke Tests
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm run smoke
+        env:
+          BASE_URL: https://cupcake-store-h.contato-schwarz.workers.dev

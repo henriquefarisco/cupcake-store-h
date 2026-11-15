@@ -1,0 +1,7 @@
+flowchart LR
+    F[Formulario React] -->|POST JSON sem precos confiaveis| M[Middleware de origem e sessao]
+    M --> V[Validacao Zod]
+    V --> C[Controlador Hono]
+    C -->|consultas parametrizadas| D[(D1)]
+    D -->|registros ou erro| C
+    C -->|JSON e status HTTP| F

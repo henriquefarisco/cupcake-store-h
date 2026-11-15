@@ -1,0 +1,78 @@
+erDiagram
+    users ||--o{ sessions : possui
+    users ||--o{ addresses : informa
+    users ||--o{ orders : realiza
+    addresses ||--o{ orders : destina
+    categories ||--o{ products : agrupa
+    orders ||--|{ order_items : contem
+    products ||--o{ order_items : referencia
+    orders ||--|{ order_status_history : registra
+    users ||--o{ order_status_history : altera
+    users {
+      TEXT id PK
+      TEXT name
+      TEXT email UK
+      TEXT password
+      TEXT role
+      TEXT created_at
+    }
+    sessions {
+      TEXT token_hash PK
+      TEXT user_id FK
+      INTEGER expires_at
+    }
+    products {
+      INTEGER id PK
+      TEXT name
+      TEXT description
+      INTEGER category_id FK
+      INTEGER price_cents
+      INTEGER stock
+      INTEGER active
+      TEXT image
+    }
+    categories {
+      INTEGER id PK
+      TEXT name UK
+    }
+    addresses {
+      TEXT id PK
+      TEXT user_id FK
+      TEXT cep
+      TEXT street
+      TEXT number
+      TEXT district
+      TEXT city
+      TEXT state
+      TEXT complement
+    }
+    orders {
+      TEXT id PK
+      TEXT user_id FK
+      TEXT address_id FK
+      TEXT payment
+      TEXT status
+      INTEGER total_cents
+      TEXT idempotency_key
+      TEXT request_hash
+      TEXT created_at
+    }
+    order_items {
+      TEXT order_id PK,FK
+      INTEGER product_id PK,FK
+      TEXT name
+      INTEGER quantity
+      INTEGER unit_price_cents
+    }
+    order_status_history {
+      INTEGER id PK
+      TEXT order_id FK
+      TEXT status
+      TEXT changed_by FK
+      TEXT created_at
+    }
+    auth_limits {
+      TEXT key PK
+      INTEGER attempts
+      INTEGER expires_at
+    }

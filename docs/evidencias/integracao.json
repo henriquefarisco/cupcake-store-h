@@ -1,0 +1,167 @@
+{
+  "environment": "Wrangler local / workerd / D1",
+  "passed": 40,
+  "failed": 0,
+  "results": [
+    {
+      "name": "D1 health real",
+      "status": "passed"
+    },
+    {
+      "name": "H01 catálogo seed com oito produtos",
+      "status": "passed"
+    },
+    {
+      "name": "H02 detalhes de produto",
+      "status": "passed"
+    },
+    {
+      "name": "H03 busca e filtros combinados",
+      "status": "passed"
+    },
+    {
+      "name": "Produto inexistente retorna 404",
+      "status": "passed"
+    },
+    {
+      "name": "H04 cadastro persistido e cookie seguro",
+      "status": "passed"
+    },
+    {
+      "name": "H05 logout revoga sessão",
+      "status": "passed"
+    },
+    {
+      "name": "H05 senha incorreta é rejeitada",
+      "status": "passed"
+    },
+    {
+      "name": "H05 login real",
+      "status": "passed"
+    },
+    {
+      "name": "H06 perfil alterado persiste",
+      "status": "passed"
+    },
+    {
+      "name": "CSRF origem externa bloqueada",
+      "status": "passed"
+    },
+    {
+      "name": "Admin exige autenticação",
+      "status": "passed"
+    },
+    {
+      "name": "Cliente não acessa administração",
+      "status": "passed"
+    },
+    {
+      "name": "H11 carrinho vazio rejeitado",
+      "status": "passed"
+    },
+    {
+      "name": "H13 CEP inválido rejeitado",
+      "status": "passed"
+    },
+    {
+      "name": "H07-H13 pedido criado no D1 com endereço e PIX simulado",
+      "status": "passed"
+    },
+    {
+      "name": "H09-H12 preços recalculados e confirmação íntegra",
+      "status": "passed"
+    },
+    {
+      "name": "H11 mesma chave não duplica pedido",
+      "status": "passed"
+    },
+    {
+      "name": "H11 chave repetida com conteúdo diferente rejeitada",
+      "status": "passed"
+    },
+    {
+      "name": "Isolamento de pedidos de outro cliente",
+      "status": "passed"
+    },
+    {
+      "name": "H14 acompanhamento dos próprios pedidos",
+      "status": "passed"
+    },
+    {
+      "name": "H15 administrador autorizado pelo servidor",
+      "status": "passed"
+    },
+    {
+      "name": "H15 cadastrar produto",
+      "status": "passed"
+    },
+    {
+      "name": "H15 editar preço e estoque",
+      "status": "passed"
+    },
+    {
+      "name": "H11 estoque insuficiente aborta lote",
+      "status": "passed"
+    },
+    {
+      "name": "Falha de compra não altera estoque",
+      "status": "passed"
+    },
+    {
+      "name": "Concorrência não vende além do estoque",
+      "status": "passed"
+    },
+    {
+      "name": "H15 desativação lógica remove do catálogo",
+      "status": "passed"
+    },
+    {
+      "name": "H16 lista pedidos e clientes",
+      "status": "passed"
+    },
+    {
+      "name": "H16 impede salto inválido de status",
+      "status": "passed"
+    },
+    {
+      "name": "H16 transição preparacao",
+      "status": "passed"
+    },
+    {
+      "name": "H16 transição entrega",
+      "status": "passed"
+    },
+    {
+      "name": "H16 transição entregue",
+      "status": "passed"
+    },
+    {
+      "name": "H14 histórico completo persistido",
+      "status": "passed"
+    },
+    {
+      "name": "H16 cancelamento devolve estoque exatamente uma vez",
+      "status": "passed"
+    },
+    {
+      "name": "H16 cancelamento repetido não duplica estoque",
+      "status": "passed"
+    },
+    {
+      "name": "H17 relatório total, ranking, dias e status",
+      "status": "passed"
+    },
+    {
+      "name": "H17 período sem vendas retorna zero",
+      "status": "passed"
+    },
+    {
+      "name": "Sessão expirada rejeitada",
+      "status": "passed"
+    },
+    {
+      "name": "Limite persistido de tentativas de autenticação",
+      "status": "passed"
+    }
+  ]
+}

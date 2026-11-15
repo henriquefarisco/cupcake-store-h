@@ -1,0 +1,13 @@
+flowchart LR
+    Visitante[Visitante] --> H01([H01 Catalogo])
+    Visitante --> H02([H02 Detalhes])
+    Visitante --> H03([H03 Busca e filtros])
+    Visitante --> H04([H04 Criar conta])
+    Visitante --> H05([H05 Login e logout])
+    Cliente[Cliente autenticado] --> H06([H06 Editar perfil])
+    Cliente --> Carrinho([H07 H08 H09 Carrinho e revisao])
+    Cliente --> Compra([H10 H11 H12 H13 Pagamento endereco e confirmacao])
+    Cliente --> H14([H14 Acompanhar pedidos])
+    Admin[Administrador] --> H15([H15 Gerenciar produtos])
+    Admin --> H16([H16 Gerenciar pedidos])
+    Admin --> H17([H17 Relatorio de vendas])
