@@ -1,0 +1,17 @@
+# Correções após a primeira demonstração
+
+Versão 1.0.1, 15/11/2026. A versão anterior é 53ac602. O responsável confirmou a gravação do primeiro vídeo e autorizou a publicação das correções para a segunda demonstração. Os registros identificados e os links de vídeos ficam na entrega acadêmica local.
+
+| Caso | Comportamento anterior                                                                             | Correção                                                                                                                               | Verificação                                                       |
+| ---- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| B01  | Preço como 12,90 era recusado com mensagem genérica                                                | Conversão estrita de vírgula/ponto para centavos e mensagem específica para entrada inválida                                           | Unitário e E2E com formato brasileiro e texto inválido            |
+| B02  | Limpar datas enviava campos vazios à API; erros mantinham dados anteriores ou impediam recuperação | Datas vazias são omitidas, intervalo inverso mostra erro e novas cargas descartam resultado anterior                                   | E2E: período sem vendas, limpar ambos, inverter datas e restaurar |
+| B03  | Quantidade do produto virava zero ao apagar; na sacola o valor era restaurado a cada tecla         | Estado textual de edição permite campo vazio; compra fica desabilitada enquanto inválido; blur valida e restaura o último valor válido | E2E no produto e sacola, em desktop/mobile                        |
+| B04  | Adição no limite ainda exibia sucesso sem alterar a sacola                                         | Mensagem indica unidades efetivamente adicionadas, total por produto, adição parcial e limite                                          | Unitários e E2E em 50 unidades                                    |
+| B05  | Formulário abria acima da tela no celular, sem foco                                                | Edição rola ao formulário e foca o primeiro campo                                                                                      | E2E verifica foco e título dentro da viewport                     |
+
+Rodada final local: 15 testes unitários, 40 verificações de integração e 14 testes E2E aprovados. Os seis E2E novos correspondem a três fluxos de regressão executados em dois tamanhos de tela e cobrem os cinco casos. Capturas do reteste estão em docs/evidencias/correcao-*.png. A suíte anterior de oito E2E continua incluída.
+
+Uma primeira tentativa local do novo E2E desktop terminou em timeout na localização do campo durante preparação do ambiente; a rodada completa seguinte, com ambiente estável, aprovou os 14 testes. Não foi declarado resultado aprovado para a rodada que falhou. A pipeline repete os testes sobre banco local isolado do remoto.
+
+As confirmações e opiniões dos participantes permanecem campos pessoais a preencher. Descoberta técnica e reteste automatizado não foram atribuídos a avaliadores humanos. Não se alteraram regras de preço, estoque, autorização ou transação no servidor.

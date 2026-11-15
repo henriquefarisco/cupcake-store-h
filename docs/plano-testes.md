@@ -1,5 +1,9 @@
 # Plano e resultados de testes
 
+## Atualização 1.0.1
+
+Após a primeira demonstração, foram acrescentados testes de regressão de preço brasileiro, filtros de data, quantidade em edição, feedback da sacola e foco no celular. A rodada local final passou com 15 unitários, 40 verificações de integração e 14 E2E. Os números abaixo de 11 unitários/oito E2E documentam a versão inicial. Ver [correções e evidências](correcoes-video-1.md).
+
 Ambiente local: Windows, Node 24, Wrangler/workerd, D1 SQLite local, Chromium Playwright. Front-end compilado em modo produção. Os dados de teste são fictícios. O banco remoto não recebe a suíte de integração/E2E.
 
 | Nível                      | Escopo                                                                | Resultado da rodada local final                             |

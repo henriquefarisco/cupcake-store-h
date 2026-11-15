@@ -2,6 +2,7 @@ import React, {
   createContext,
   useContext,
   useEffect,
+  useRef,
   useState,
   type FormEvent,
   type ReactNode,
@@ -17,6 +18,8 @@ import {
   useParams,
 } from "react-router-dom";
 import { api } from "./api";
+import { addToCart, parsePrice, type CartItem } from "./cart";
+import { QuantityInput } from "./QuantityInput";
 import {
   money,
   cartTotal,
@@ -27,7 +30,6 @@ import {
   type Status,
 } from "../shared/domain";
 import "./style.css";
-type CartItem = Product & { quantity: number };
 const Store = createContext<{
   user: User | null;
   refresh: () => Promise<void>;
@@ -60,10 +62,12 @@ function App() {
     }),
     [message, setMessage] = useState("");
   const refresh = async () => setUser(await api<User | null>("/auth/me"));
+  const cartRef = useRef(cart);
   useEffect(() => {
     refresh().catch(() => {});
   }, []);
   useEffect(() => {
+    cartRef.current = cart;
     localStorage.setItem("cupcake-cart", JSON.stringify(cart));
   }, [cart]);
   useEffect(() => {
@@ -73,17 +77,10 @@ function App() {
     }
   }, [message]);
   function add(p: Product, q = 1) {
-    setCart((items) => {
-      const existing = items.find((i) => i.id === p.id);
-      return existing
-        ? items.map((i) =>
-            i.id === p.id
-              ? { ...p, quantity: Math.min(i.quantity + q, p.stock, 50) }
-              : i,
-          )
-        : [...items, { ...p, quantity: Math.min(q, p.stock, 50) }];
-    });
-    setMessage("Cupcake adicionado à sua sacola.");
+    const result = addToCart(cartRef.current, p, q);
+    cartRef.current = result.items;
+    setCart(result.items);
+    setMessage(result.message);
   }
   return (
     <Store.Provider
@@ -187,13 +184,15 @@ function Empty({ title, text }: { title: string; text: string }) {
     </section>
   );
 }
-function useLoad<T>(path: string) {
+function useLoad<T>(path: string | null) {
   const [data, setData] = useState<T | null>(null),
     [error, setError] = useState(""),
     [version, setVersion] = useState(0);
   useEffect(() => {
     let live = true;
     setError("");
+    setData(null);
+    if (path === null) return;
     api<T>(path)
       .then((v) => {
         if (live) setData(v);
@@ -462,6 +461,7 @@ function Details() {
   const { id } = useParams();
   const { data: p, error, reload } = useLoad<Product>("/products/" + id);
   const [quantity, setQuantity] = useState(1);
+  const [quantityValid, setQuantityValid] = useState(true);
   const { add } = useStore();
   return p ? (
     <section className="page detail">
@@ -480,20 +480,17 @@ function Details() {
             ? p.stock + " unidades disponíveis"
             : "Esgotado por enquanto."}
         </p>
-        <label>
-          Quantidade
-          <input
-            type="number"
-            min="1"
-            max={Math.min(50, p.stock)}
-            value={quantity}
-            onChange={(e) => setQuantity(Number(e.target.value))}
-          />
-        </label>
+        <QuantityInput
+          value={quantity}
+          max={Math.min(50, p.stock)}
+          onChange={setQuantity}
+          onValidityChange={setQuantityValid}
+        />
         <button
           className="button"
           disabled={
             !p.stock ||
+            !quantityValid ||
             !Number.isInteger(quantity) ||
             quantity < 1 ||
             quantity > Math.min(50, p.stock)
@@ -727,29 +724,18 @@ function Cart() {
                   Remover
                 </button>
               </div>
-              <label>
-                Quantidade
-                <input
-                  aria-label={"Quantidade de " + i.name}
-                  type="number"
-                  min="1"
-                  max={Math.min(50, i.stock)}
-                  value={i.quantity}
-                  onChange={(e) => {
-                    const q = Number(e.target.value);
-                    if (
-                      Number.isInteger(q) &&
-                      q > 0 &&
-                      q <= Math.min(50, i.stock)
-                    )
-                      setCart((v) =>
-                        v.map((x) =>
-                          x.id === i.id ? { ...x, quantity: q } : x,
-                        ),
-                      );
-                  }}
-                />
-              </label>
+              <QuantityInput
+                value={i.quantity}
+                max={Math.min(50, i.stock)}
+                label={"Quantidade de " + i.name}
+                onChange={(quantity) =>
+                  setCart((items) =>
+                    items.map((item) =>
+                      item.id === i.id ? { ...item, quantity } : item,
+                    ),
+                  )
+                }
+              />
               <strong>{money(i.price_cents * i.quantity)}</strong>
             </article>
           ))}
@@ -1021,12 +1007,28 @@ function Admin() {
   return <Gate admin>{user?.role === "admin" && <AdminPanel />}</Gate>;
 }
 function AdminPanel() {
+  const formRef = useRef<HTMLFormElement>(null);
   const [tab, setTab] = useState("products"),
     [error, setError] = useState(""),
     [edit, setEdit] = useState<Product | null>(null),
     [creating, setCreating] = useState(false),
     [from, setFrom] = useState("2000-01-01"),
     [to, setTo] = useState("2099-12-31");
+  useEffect(() => {
+    if (!edit && !creating) return;
+    const frame = requestAnimationFrame(() => {
+      formRef.current?.scrollIntoView({ block: "start", behavior: "instant" });
+      formRef.current?.querySelector("input")?.focus({ preventScroll: true });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [edit, creating]);
+  const dateError =
+    from && to && from > to
+      ? "A data inicial deve ser anterior ou igual à data final."
+      : "";
+  const reportParams = new URLSearchParams();
+  if (from) reportParams.set("from", from);
+  if (to) reportParams.set("to", to);
   const products = useLoad<Product[]>("/admin/products"),
     orders = useLoad<Order[]>("/admin/orders");
   const report = useLoad<{
@@ -1034,7 +1036,7 @@ function AdminPanel() {
     top: { name: string; quantity: number }[];
     distribution: { status: Status; count: number }[];
     daily: { day: string; total_cents: number }[];
-  }>("/admin/reports/sales?" + new URLSearchParams({ from, to }));
+  }>(dateError ? null : "/admin/reports/sales?" + reportParams.toString());
   async function action(work: () => Promise<unknown>) {
     setError("");
     try {
@@ -1079,18 +1081,26 @@ function AdminPanel() {
           </button>
           {(edit || creating) && (
             <form
+              ref={formRef}
               className="form-card"
               key={edit?.id || "new"}
               onSubmit={(e) => {
                 e.preventDefault();
                 const f = Object.fromEntries(new FormData(e.currentTarget));
+                const price = parsePrice(String(f.price));
+                if (price === null) {
+                  setError(
+                    "Informe um preço de R$ 1,00 a R$ 1.000,00, como 12,90 ou 12.90.",
+                  );
+                  return;
+                }
                 action(async () => {
                   await api(
                     "/admin/products" + (edit ? "/" + edit.id : ""),
                     edit ? "PATCH" : "POST",
                     {
                       ...f,
-                      price_cents: Math.round(Number(f.price) * 100),
+                      price_cents: price,
                       stock: Number(f.stock),
                       category_id: Number(f.category_id),
                       active: Number(f.active),
@@ -1269,7 +1279,9 @@ function AdminPanel() {
               />
             </label>
           </div>
-          {report.data ? (
+          {dateError ? (
+            <ErrorText error={dateError} />
+          ) : report.data ? (
             <>
               <div className="metrics">
                 <div>

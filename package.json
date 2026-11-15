@@ -1,6 +1,6 @@
 {
   "name": "cupcake-store-h",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Loja acadêmica de cupcakes em React, Workers e D1",
   "scripts": {
     "dev": "vite --host 127.0.0.1",

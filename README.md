@@ -1,5 +1,7 @@
 # Cupcake Store H
 
+Versão 1.0.1: corrigidos filtros de data ao limpar campos, edição de quantidade sem zero automático, feedback com quantidade efetivamente adicionada, preço administrativo com vírgula e foco/rolagem do formulário no celular. Retestes locais: 15 unitários, 40 verificações de integração e 14 E2E aprovados. Ver [registro das correções](docs/correcoes-video-1.md).
+
 Loja virtual acadêmica que implementa 17 histórias de usuário, do catálogo à administração de produtos, pedidos e relatórios. Pagamentos e entregas são demonstrativos, sem cobranças reais.
 
 **Aplicação:** https://cupcake-store-h.contato-schwarz.workers.dev

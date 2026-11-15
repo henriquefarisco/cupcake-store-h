@@ -1,5 +1,9 @@
 # Laudo técnico de qualidade
 
+## Complemento da versão 1.0.1
+
+Os cinco casos B01–B05 reproduzidos após a primeira versão foram corrigidos: preço com vírgula, recuperação/validação dos filtros de data, edição de quantidade sem zero imposto, feedback da quantidade adicionada e foco/rolagem na edição móvel. A rodada local final aprovou 15 unitários, 40 verificações de integração e 14 E2E. Evidências e limites do reteste constam em [correcoes-video-1.md](correcoes-video-1.md). As confirmações humanas continuam separadas e pendentes. O texto a seguir preserva a avaliação inicial da versão 1.0.0.
+
 Cupcake Store H, versão 1.0.0. Avaliação em 15 de novembro de 2026, ambiente Windows/Node 24, Chromium, workerd e D1 local; smoke em Cloudflare Workers/D1 remoto. A referência verificável de código é o commit da execução publicada no GitHub Actions, complementada pelo registro local de entrega. Este documento inicial acompanha a implementação e não inventa hash anterior à criação do commit.
 
 ## Objetivo e método

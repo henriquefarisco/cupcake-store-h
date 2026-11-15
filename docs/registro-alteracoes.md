@@ -1,5 +1,9 @@
 # Registro de alterações
 
+## Versão 1.0.1
+
+Correções de cinco cenários após a primeira gravação: filtros de data recuperáveis, edição natural de quantidade no produto e sacola, feedback com unidades efetivamente adicionadas, preço administrativo em formato brasileiro e foco/rolagem da edição móvel. Foram adicionados quatro testes unitários e seis execuções E2E de regressão, mantendo a suíte existente. Detalhes em correcoes-video-1.md. Sem mudanças no esquema do banco ou autenticação.
+
 ## Versão 1.0.0
 
 A PIT I continha planejamento, backlog e evidências de organização no Jira. A implementação começou em uma pasta sem código ou histórico Git. Foram acrescentados catálogo, contas, sessões, carrinho persistente, checkout simulado, pedidos, acompanhamento e administração para as 17 histórias.
